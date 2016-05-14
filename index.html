@@ -1,109 +1,31 @@
 <html>
   <head>
+    <title>Meramec Application Suite</title>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+    <style>
+      body{ font-family: 'Open Sans'; }
+      a { text-decoration: none; color: black; }
+      .title{ font-size: 2.2em; font-weight: bold; padding: 20px; }
+      .content{ width: 100%; padding: 20px; }
+      .list{ font-size: 1.6em; width: 45%; }
+      .list .link{ font-size: 0.8em; color: gray; background-color: #eee; cursor: pointer; padding: 20px; margin-top: 10px; border: solid thin lightgray; }
+      .list .link:hover{ color: black; background-color: #ddd }
+    </style>
   </head>
-
   <body>
-    <div id="authorize-div" style="display: none">
-      <span>Authorize access to Drive API</span>
-      <!--Button for the user to click to initiate auth sequence -->
-      <button id="authorize-button" onclick="handleAuthClick(event)">
-        Authorize
-      </button>
+    <div class='title'>
+      Meramec Application Suite
     </div>
-    <pre id="output"></pre>
+    <div class='content'>
+      <div class='list'>
+        Available Applications
+        <a href='report'>
+          <div class='link'>
+            Report Generator
+          </div>
+        </a>
+      </div>
+    </div>
   </body>
-
-  <script type="text/javascript">
-    var clientId = '215619993678-kdcmgv8u79r9vdmti2m3ldjuvqgagnb7.apps.googleusercontent.com';
-    var scopes = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
-
-/**
-       * Check if current user has authorized this application.
-       */
-      function checkAuth() {
-        gapi.auth.authorize(
-          {
-            'client_id': clientId,
-            'scope': scopes.join(' '),
-            'immediate': true
-          }, handleAuthResult);
-      }
-
-      /**
-       * Handle response from authorization server.
-       *
-       * @param {Object} authResult Authorization result.
-       */
-      function handleAuthResult(authResult) {
-        var authorizeDiv = document.getElementById('authorize-div');
-        if (authResult && !authResult.error) {
-          // Hide auth UI, then load client library.
-          authorizeDiv.style.display = 'none';
-          loadDriveApi();
-        } else {
-          // Show auth UI, allowing the user to initiate authorization by
-          // clicking authorize button.
-          authorizeDiv.style.display = 'inline';
-        }
-      }
-
-      /**
-       * Initiate auth flow in response to user clicking authorize button.
-       *
-       * @param {Event} event Button click event.
-       */
-      function handleAuthClick(event) {
-        gapi.auth.authorize(
-          {client_id: clientId, scope: scopes, immediate: false},
-          handleAuthResult);
-        return false;
-      }
-
-      /**
-       * Load Drive API client library.
-       */
-      function loadDriveApi() {
-        gapi.client.load('drive', 'v3', listFiles);
-      }
-
-      /**
-       * Print files.
-       */
-      function listFiles() {
-        var request = gapi.client.drive.files.list({
-            'pageSize': 10,
-            'fields': "nextPageToken, files(id, name)"
-          });
-
-          request.execute(function(resp) {
-            appendPre('Files:');
-            var files = resp.files;
-            if (files && files.length > 0) {
-              for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                appendPre(file.name + ' (' + file.id + ')');
-              }
-            } else {
-              appendPre('No files found.');
-            }
-          });
-      }
-
-      /**
-       * Append a pre element to the body containing the given message
-       * as its text node.
-       *
-       * @param {string} message Text to be placed in pre element.
-       */
-      function appendPre(message) {
-        var pre = document.getElementById('output');
-        var textContent = document.createTextNode(message + '\n');
-        pre.appendChild(textContent);
-      }
-
-    </script>
-    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
-    </script>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
 </html>
